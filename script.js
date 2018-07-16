@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
 // Tasks creation function
     function renderTask() {
+    	var root= document.querySelector('.root');
         var list = document.getElementsByClassName('forSort');
         var table = document.querySelector(".table");
         var initial = document.getElementById('initial');
@@ -48,17 +49,18 @@ document.addEventListener("DOMContentLoaded", function (event) {
                     '<input class="radio" id="333" type="radio" name="priority" value="red">First priority<br/>' +
                     '<input class="radio" id="332" type="radio" name="priority" value="yellow" checked>Medium priority<br/>' +
                     '<input class="radio" id="331" type="radio" name="priority" value="blue">Low priority<br/>' +
-                    '<button id="createBut" style="float: left">Создать задание/Редактировать</button>' +
+                    '<button id="createBut" style="display: '+props.create+'">Создать задание/Редактировать</button>' +
+                    '<button id="redBut" style="display:'+props.redact+'; float: left">Редактировать</button>' +
                     '<button class="closeRed" style="float: right">Закрыть</button>';
             } else {
                 container.innerHTML = '<input class="radio" id="333" type="radio" name="priority" value="red">High priority<br/>' +
                     '<input class="radio" id="332" type="radio" name="priority" value="yellow" checked>Medium priority<br/>' +
                     '<input class="radio" id="331" type="radio" name="priority" value="blue">Low priority<br/>' +
-                    '<button id="createBut" style="float: left">Создать задание/Редактировать</button>' +
+                    '<button id="redBut" style="display:'+props.redact+'; float: left">Редактировать</button>' +
                     '<button class="closeRed" style="float: right">Закрыть</button>';
             }
             modDiv.appendChild(container);
-            document.body.appendChild(modDiv)
+            root.appendChild(modDiv)
         }
 
 // New task, body
@@ -86,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
             initial.appendChild(newTask);
         }
 
-        //Edit task
+        //Edit task function
         function redactTaskBody(props) {
             let taskName = document.getElementById('taskName');
             let taskContent = document.getElementById('taskContent');
@@ -118,28 +120,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
             }
         }
 
-        // Render task function
-        function callTask() {
-            let butt = document.getElementById('button');
-            butt.onclick = function () {
-                modalWind({onlyPriority: false});
-                closeRedact();
-                renderElem();
-            }
-        }
-        callTask();
-
-        //Render taskBody
-        function renderElem() {
-            var butt = document.getElementById('createBut');
-
-            butt.onclick = function () {
-                document.getElementById('taskName').value==''? alert('Input task name'):
-                taskBody();
-                sortNodes();
-            }
-        };
-
 // Button state
         function displayBut(props) {
 
@@ -162,32 +142,36 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 pushRight[0].style.display = 'none';
                 redact[0].style.display = 'none';
             }
-
-        }
-
-// Closing editor
-        function closeRedact() {
-            let galWind = document.querySelector(".galWind");
-            let closeRed = document.querySelector(".closeRed");
-            closeRed.onclick = function () {
-                document.body.removeChild(galWind)
-            }
         }
 
 // Task-button action
-        function replaceTask() {
-            table.addEventListener('click',
+        function buttonAction() {
+            root.addEventListener('click',
                 function replace_delete(event) {
+
                     let parentTd = (event.target.parentNode.parentNode).parentNode;
                     let parent = event.target.parentNode.parentNode;
-                    let headTask = parent.querySelector('h4').innerText;
-                    let textTask = parent.querySelector('p').innerText;
-
+                    let headTask = event.target.tagName=='IMG'? parent.querySelector('h4').innerText: '';
+                    let textTask = event.target.tagName=='IMG'? parent.querySelector('p').innerText: '';
+                    let galWind = document.querySelector(".galWind");
+                
+                if (event.target.className === "closeRed") {
+                    	  root.removeChild(galWind)
+                       
+                    }
+                      if (event.target.id === "button") {
+                    	 modalWind({onlyPriority: false, create: 'inline-block', redact:'none'});
+                       
+                    }
+                     if (event.target.id === "createBut") {
+                    	 document.getElementById('taskName').value==''? alert('Input task name'):
+                         taskBody();
+                         sortNodes();
+                    }
+                    
                     if (event.target.className === "pushRight") {
                         parentTd.nextElementSibling.appendChild(parent);
-                        console.log(parent.parentNode.id)
-                        console.log(parent)
-                       // createStorage({content:parent, key: parent.parentNode.id})
+
                         localStorage.clear();
                         displayBut(parent);
                         sortNodes();
@@ -209,10 +193,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
                         parentTd == initial ? modalWind({
                             onlyPriority: false,
                             headTask: headTask,
-                            textTask: textTask
-                        }) : modalWind({onlyPriority: true});
-                        closeRedact();
-                        document.getElementById('createBut').onclick = function () {
+                            textTask: textTask,
+                             create: 'none', 
+                             redact:'inline-block'
+                        }) : modalWind({onlyPriority: true, create:'none', redact:'inline-block'});
+                        document.getElementById('redBut').onclick = function () {
 
                             parentTd == initial ? redactTaskBody({
                                     taskId: targObj.id,
@@ -226,7 +211,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                     }
                 })
         }
-        replaceTask();
+        buttonAction();
 
 //Sorting tasks by date, priority and creating localStorage
         function sortNodes() {

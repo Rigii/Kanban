@@ -3,6 +3,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
 // Table body
     function renderTable() {
         let root=document.querySelector('.root');
+        let but= document.createElement('span');
+        but.id= 'button';
+        but.innerText='CREATE TASK';
         let tree= document.createElement('table');
         tree.className='table';
         tree.innerHTML='<tr>' +
@@ -17,6 +20,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
             '<td id=\'done\' class=\'stage forSort\'></td>' +
             '<td id=\'aborted\' class=\'stage forSort\'></td>' +
             '</tr>';
+            root.appendChild(but)
         root.appendChild(tree)
     }
     renderTable();
@@ -42,22 +46,22 @@ document.addEventListener("DOMContentLoaded", function (event) {
             container.className = 'modContent';
             if (props.onlyPriority == false) {
                 container.innerHTML =
-                    '<h3>Введите название задачи</h3><br>' +
+                    '<h3>Enter a title for the task </h3><br>' +
                     '<input id="taskName" type="text" style="width:20vw" value="' + headTask + '"><br>' +
-                    '<h3>Описание задачи</h3><br>' +
+                    '<h3>Task description</h3><br>' +
                     '<textarea id="taskContent" rows="10" style="width:30vw" name="text">' + textTask + '</textarea><br>' +
                     '<input class="radio" id="333" type="radio" name="priority" value="red">First priority<br/>' +
                     '<input class="radio" id="332" type="radio" name="priority" value="yellow" checked>Medium priority<br/>' +
                     '<input class="radio" id="331" type="radio" name="priority" value="blue">Low priority<br/>' +
-                    '<button id="createBut" style="display: '+props.create+'">Создать задание/Редактировать</button>' +
-                    '<button id="redBut" style="display:'+props.redact+'; float: left">Редактировать</button>' +
-                    '<button class="closeRed" style="float: right">Закрыть</button>';
+                    '<button id="createBut" style="display: '+props.create+'; float: left">Create task</button>' +
+                    '<button id="redBut" style="display:'+props.redact+'; float: left">Redact</button>' +
+                    '<button class="closeRed" style="float: right">Close</button>';
             } else {
                 container.innerHTML = '<input class="radio" id="333" type="radio" name="priority" value="red">High priority<br/>' +
                     '<input class="radio" id="332" type="radio" name="priority" value="yellow" checked>Medium priority<br/>' +
                     '<input class="radio" id="331" type="radio" name="priority" value="blue">Low priority<br/>' +
-                    '<button id="redBut" style="display:'+props.redact+'; float: left">Редактировать</button>' +
-                    '<button class="closeRed" style="float: right">Закрыть</button>';
+                    '<button id="redBut" style="display:'+props.redact+'; float: left">Redact</button>' +
+                    '<button class="closeRed" style="float: right">Close</button>';
             }
             modDiv.appendChild(container);
             root.appendChild(modDiv)

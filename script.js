@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function (event) {
 
-// Table body
+// Table body and "add button"
     function renderTable() {
         let root=document.querySelector('.root');
         let but= document.createElement('span');
@@ -89,6 +89,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                     newTask.className = radio[i].id;
                 }
             }
+            localStorage.setItem('initial'+timeIndex, JSON.stringify(newTask.outerHTML));
             initial.appendChild(newTask);
         }
 
@@ -133,8 +134,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
             let redact = props.getElementsByClassName('redact');
             let parent = props.parentNode;
 
-            parent == in_progress ? delTask[0].style.display = 'none' : delTask[0].style.display = 'inline-block';
-
+            if (parent == in_progress || parent == initial) {delTask[0].style.display = 'none'} ;
+            if (parent == done ||  parent == aborted){ delTask[0].style.display = 'inline-block'};
             if (parent == done) {
                 cancel[0].style.display = 'none';
                 pushRight[0].style.display = 'none';
@@ -170,27 +171,32 @@ document.addEventListener("DOMContentLoaded", function (event) {
                      if (event.target.id === "createBut") {
                     	 document.getElementById('taskName').value==''? alert('Input task name'):
                          taskBody();
+                         displayBut(parent);
+                         parentTd.removeChild(parent);
                          sortNodes();
                     }
                     
                     if (event.target.className === "pushRight") {
                         parentTd.nextElementSibling.appendChild(parent);
+                        localStorage.setItem(parentTd.nextElementSibling.id+parent.id, localStorage[parentTd.id+parent.id]);
+                        localStorage.removeItem(parentTd.id+parent.id)
 
-                        localStorage.clear();
                         displayBut(parent);
                         sortNodes();
                     }
                     if (event.target.className === "delTask") {
-                        localStorage.clear();
+                      console.log(parentTd.className.replace('stage', '')+parent.id)
                         parentTd.removeChild(parent);
-                        localStorage.clear();
+                        localStorage.removeItem(parentTd.id+parent.id)
                         sortNodes()
                     }
                     if (event.target.className === "cancel") {
-                        localStorage.clear();
+
                         aborted.appendChild(parent);
+                        localStorage.setItem(aborted.id+parent.id, localStorage[parentTd.id+parent.id]);
+                        localStorage.removeItem(parentTd.id+parent.id)
                         displayBut(parent);
-                        sortNodes()
+                        sortNodes()  
                     }
                     if (event.target.className === "redact") {
                         let targObj = parent;
@@ -200,7 +206,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
                             textTask: textTask,
                              create: 'none', 
                              redact:'inline-block'
-                        }) : modalWind({onlyPriority: true, create:'none', redact:'inline-block'});
+                        }) 
+                        : modalWind({onlyPriority: true, create:'none', redact:'inline-block'});
                         document.getElementById('redBut').onclick = function () {
 
                             parentTd == initial ? redactTaskBody({
@@ -209,8 +216,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
                                     onlyPriority: false
                                 }) :
                                 redactTaskBody({taskId: targObj.id, taskClass: targObj.className, onlyPriority: true})
-                            localStorage.clear();
+                                localStorage.setItem(parentTd.id+parent.id, JSON.stringify(parent.outerHTML));
                             sortNodes()
+                            
                         }
                     }
                 })
@@ -235,21 +243,29 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 });
                 for (y = 0; y < itemsArr.length; ++y) {
                     list[i].appendChild(itemsArr[y]);
-                    let sortKey= itemsArr[y].parentNode.id;
-                   localStorage.setItem(sortKey, JSON.stringify(itemsArr[y].parentNode.innerHTML));// записал в localStorage. Ключи- id колонок.
                 }
             }
         }
 
-        //Render tasks from localStorage
-       function renderLocalStorage(){
-           for (i = 0; i < list.length; i++) {
-               var storageTasks = JSON.parse(localStorage.getItem(list[i].id));
-               console.log(list[i].id);
-               list[i].innerHTML=storageTasks;
-           }
-        }
-        renderLocalStorage()
+// LocaleStorage render
+function renderLocalStorage(){
+
+           for (var key in localStorage) {
+           let sortageKey= key.replace(/[0-9]/g, '')
+           let sortageId= key.replace(/\D+/g,"");
+
+if(sortageKey==='initial'){initial.insertAdjacentHTML('afterbegin',JSON.parse(localStorage.getItem(key)));
+ displayBut(document.getElementById(sortageId))}
+if(sortageKey==='in_progress'){in_progress.insertAdjacentHTML('afterbegin',JSON.parse(localStorage.getItem(key)))
+displayBut(document.getElementById(sortageId))}
+if(sortageKey==='done'){done.insertAdjacentHTML('afterbegin',JSON.parse(localStorage.getItem(key)))
+displayBut(document.getElementById(sortageId))}
+if(sortageKey==='aborted'){aborted.insertAdjacentHTML('afterbegin',JSON.parse(localStorage.getItem(key)))
+displayBut(document.getElementById(sortageId))}
+sortNodes()
+}
+}
+renderLocalStorage()
     }
     renderTask();
 

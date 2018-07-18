@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
 // Table body and "add button"
     function renderTable() {
-        let root=document.querySelector('.root');
+        let root=document.querySelector('.kanban');
         let but= document.createElement('span');
         but.id= 'button';
         but.innerText='CREATE TASK';
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
 // Tasks creation function
     function renderTask() {
-    	var root= document.querySelector('.root');
+    	var root= document.querySelector('.kanban');
         var list = document.getElementsByClassName('forSort');
         var table = document.querySelector(".table");
         var initial = document.getElementById('initial');

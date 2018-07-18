@@ -11,11 +11,11 @@ The essence of the task can be edited only in the column "TO DO". In the column 
 The task can be canceled by pressing the "Cancel" button in this case it will appear in the "CANCELED" column.
 In the columns "DONE" and "CANCELED", the task can be deleted.
 
+### To use the application in other resources, be prepared for the most terrible difficulties in your career as a programmer. Drink a little valerian: 
+
 1. Copy the folder to its root directory. 
 2. In the HTML document, in body create a node with the class "kanban".
 3. Connect the file "kanban.js" to the "head".
-
-### To use the application in other resources, be prepared for the most terrible difficulties in your career as a programmer. Drink a little valerian: 
 
 ```html 
 <!DOCTYPE html>

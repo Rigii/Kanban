@@ -23,6 +23,9 @@
 .table tr{
 background-color: aqua;	
 }
+.table td{
+vertical-align: top;
+}
 .table th{
 	background-color: grey;
 }

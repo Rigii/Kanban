@@ -8,18 +8,18 @@ document.addEventListener("DOMContentLoaded", function (event) {
         but.innerText='CREATE TASK';
         let tree= document.createElement('table');
         tree.className='table';
-        tree.innerHTML='<tr>' +
+        tree.innerHTML='<thead>' +
             '<th class="stage head">TO DO</th>' +
             '<th class="stage head">IN PROCESS</th>' +
             '<th class="stage head">DONE</th>' +
             '<th class="stage head">CANCELED</th>' +
-            '</tr>'+
-            '<tr class="bodyTable">'+
+            '</thead>'+
+            '<tbody class="bodyTable">'+
             '<td id="initial" class="stage forSort"></td>' +
             '<td id="in_progress" class="stage forSort"></td>' +
             '<td id="done" class="stage forSort"></td>' +
             '<td id="aborted" class="stage forSort"></td>' +
-            '</tr>';
+            '</tbody>';
             root.appendChild(but)
         root.appendChild(tree)
     }

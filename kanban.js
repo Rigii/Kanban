@@ -8,31 +8,18 @@ document.addEventListener("DOMContentLoaded", function (event) {
         but.innerText='CREATE TASK';
         let tree= document.createElement('table');
         tree.className='table';
-<<<<<<< HEAD:kanban.js
         tree.innerHTML='<thead>' +
-=======
-        tree.innerHTML='<tr>' +
->>>>>>> cb201ce3bdfd6b2f0fbc3ce16b14c2af03476bcf:kanban.js
             '<th class="stage head">TO DO</th>' +
             '<th class="stage head">IN PROCESS</th>' +
             '<th class="stage head">DONE</th>' +
             '<th class="stage head">CANCELED</th>' +
-<<<<<<< HEAD:kanban.js
             '</thead>'+
             '<tbody class="bodyTable">'+
-=======
-            '</tr>'+
-            '<tr class="bodyTable">'+
->>>>>>> cb201ce3bdfd6b2f0fbc3ce16b14c2af03476bcf:kanban.js
             '<td id="initial" class="stage forSort"></td>' +
             '<td id="in_progress" class="stage forSort"></td>' +
             '<td id="done" class="stage forSort"></td>' +
             '<td id="aborted" class="stage forSort"></td>' +
-<<<<<<< HEAD:kanban.js
             '</tbody>';
-=======
-            '</tr>';
->>>>>>> cb201ce3bdfd6b2f0fbc3ce16b14c2af03476bcf:kanban.js
             root.appendChild(but)
         root.appendChild(tree)
     }

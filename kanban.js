@@ -9,16 +9,16 @@ document.addEventListener("DOMContentLoaded", function (event) {
         let tree= document.createElement('table');
         tree.className='table';
         tree.innerHTML='<tr>' +
-            '<th class=\'stage head\'>TO DO</th>' +
-            '<th class=\'stage head\'>IN PROCESS</th>' +
-            '<th class=\'stage head\'>DONE</th>' +
-            '<th class=\'stage head\'>CANCELED</th>' +
+            '<th class="stage head">TO DO</th>' +
+            '<th class="stage head">IN PROCESS</th>' +
+            '<th class="stage head">DONE</th>' +
+            '<th class="stage head">CANCELED</th>' +
             '</tr>'+
             '<tr class="bodyTable">'+
-            '<td id=\'initial\' class=\'stage forSort\'></td>' +
-            '<td id=\'in_progress\' class=\'stage forSort\'></td>' +
-            '<td id=\'done\' class=\'stage forSort\'></td>' +
-            '<td id=\'aborted\' class=\'stage forSort\'></td>' +
+            '<td id="initial" class="stage forSort"></td>' +
+            '<td id="in_progress" class="stage forSort"></td>' +
+            '<td id="done" class="stage forSort"></td>' +
+            '<td id="aborted" class="stage forSort"></td>' +
             '</tr>';
             root.appendChild(but)
         root.appendChild(tree)
@@ -68,6 +68,20 @@ document.addEventListener("DOMContentLoaded", function (event) {
         }
 
 // New task, body
+function bodyTask(props){
+ let taskForRender= document.createElement('div');
+ console.log(props.color)
+            taskForRender.id = props.id;
+            taskForRender.className= props.class;
+            taskForRender.style.background=props.color;
+            taskForRender.innerHTML = '<div class="taskWindReady"><div class="tskName"><h4>' + props.name + '</h4></div><p>' + props.content + '</p>' +
+                '<p>' + props.date + '</p>' +
+                '<img class="delTask" src="img/ico/del.png" alt="del" style="display: none; cursor: pointer">' +
+                '<img class="cancel" src="img/ico/cancel.png" alt="cancel" style="cursor: pointer">' +
+                '<img class="redact" src="img/ico/redact.png" alt="redact" style="cursor: pointer">' +
+                '<img class="pushRight" height="27" style="float:right; cursor: pointer" src="img/ico/right.png" alt="pushRight"></div>';
+return taskForRender
+}
         function taskBody() {
             let taskName = document.getElementById('taskName');
             let taskContent = document.getElementById('taskContent');
@@ -75,21 +89,20 @@ document.addEventListener("DOMContentLoaded", function (event) {
             let timeIndex = moment().format('DDMMYYYYHmmss');
             let radio = document.getElementsByClassName('radio');
 
-            let newTask = document.createElement('div');
-            newTask.id = timeIndex;
-            newTask.innerHTML = '<div class="taskWindReady"><div class="tskName"><h4>' + taskName.value + '</h4></div><p>' + taskContent.value + '</p>' +
-                '<p>' + date + '</p>' +
-                '<img class="delTask" src="img/ico/del.png" alt="del" style="display: none; cursor: pointer">' +
-                '<img class="cancel" src="img/ico/cancel.png" alt="cancel" style="cursor: pointer">' +
-                '<img class="redact" src="img/ico/redact.png" alt="redact" style="cursor: pointer">' +
-                '<img class="pushRight" height="27" style="float:right; cursor: pointer" src="img/ico/right.png" alt="pushRight"></div>';
+            let taskArr={
+                id: timeIndex,
+                name: taskName.value,
+                content: taskContent.value,
+                date: date   
+            };
             for (i in radio) {
                 if (radio[i].checked) {
-                    newTask.style.background = radio[i].value;
-                    newTask.className = radio[i].id;
+                    taskArr.color= radio[i].value;
+                    taskArr.class = radio[i].id;
                 }
             }
-            localStorage.setItem('initial'+timeIndex, JSON.stringify(newTask.outerHTML));
+            localStorage.setItem('initial'+timeIndex, JSON.stringify(taskArr));
+            let newTask=bodyTask(taskArr);
             initial.appendChild(newTask);
         }
 
@@ -101,28 +114,30 @@ document.addEventListener("DOMContentLoaded", function (event) {
             let radio = document.getElementsByClassName('radio');
             let taskId = props.taskId;
             let target = document.getElementById(taskId);
+            let taskArr=JSON.parse(localStorage.getItem(props.parentClass+props.taskId));
             if (props.onlyPriority == true) {
                 for (i in radio) {
                     if (radio[i].checked) {
-                        target.style.background = radio[i].value;
-                        target.className = radio[i].id;
+                        taskArr.color = radio[i].value;
+                        taskArr.class = radio[i].id;
                     }
                 }
             } else {
-                target.innerHTML = '';
-                target.innerHTML = '<div class="taskWindReady"><div class="tskName"><h4>' + taskName.value + '</h4></div><p>' + taskContent.value + '</p>' +
-                    '<p>' + date + '</p>' +
-                    '<img class="delTask" src="img/ico/del.png" alt="del" style="display: none; cursor: pointer">' +
-                    '<img class="cancel" src="img/ico/cancel.png" alt="cancel" style="cursor: pointer">' +
-                    '<img class="redact" src="img/ico/redact.png" alt="redact" style="cursor: pointer">' +
-                    '<img class="pushRight" height="27" style="float:right; cursor: pointer" src="img/ico/right.png" alt="pushRight"></div>';
+                    taskArr.id=props.taskId, 
+                    taskArr.name= taskName.value,
+                    taskArr.content= taskContent.value,
+                    taskArr.date= date
                 for (i in radio) {
                     if (radio[i].checked) {
-                        target.style.background = radio[i].value;
-                        target.className = radio[i].id;
+                        taskArr.color = radio[i].value;
+                        taskArr.class = radio[i].id;
                     }
                 }
             }
+            console.log(taskArr)
+                 target.outerHTML = bodyTask(taskArr).outerHTML;
+                 
+                 localStorage.setItem(props.parentClass+props.taskId, JSON.stringify(taskArr))
         }
 
 // Button state
@@ -141,7 +156,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 pushRight[0].style.display = 'none';
                 redact[0].style.display = 'none';
             }
-
             if (parent == aborted) {
                 cancel[0].style.display = 'none';
                 pushRight[0].style.display = 'none';
@@ -161,13 +175,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
                     let galWind = document.querySelector(".galWind");
                 
                 if (event.target.className === "closeRed") {
-                    	  root.removeChild(galWind)
-                       
+                    	  root.removeChild(galWind) 
                     }
                       if (event.target.id === "button") {
-                    	 modalWind({onlyPriority: false, create: 'inline-block', redact:'none'});
-                       
+                    	 modalWind({onlyPriority: false, create: 'inline-block', redact:'none'});   
                     }
+
                      if (event.target.id === "createBut") {
                     	 document.getElementById('taskName').value==''? alert('Input task name'):
                          taskBody();
@@ -204,21 +217,19 @@ document.addEventListener("DOMContentLoaded", function (event) {
                             onlyPriority: false,
                             headTask: headTask,
                             textTask: textTask,
-                             create: 'none', 
-                             redact:'inline-block'
+                            create: 'none', 
+                            redact:'inline-block'
                         }) 
                         : modalWind({onlyPriority: true, create:'none', redact:'inline-block'});
                         document.getElementById('redBut').onclick = function () {
-
                             parentTd == initial ? redactTaskBody({
                                     taskId: targObj.id,
                                     taskClass: targObj.className,
-                                    onlyPriority: false
+                                    onlyPriority: false,
+                                    parentClass: 'initial'
                                 }) :
-                                redactTaskBody({taskId: targObj.id, taskClass: targObj.className, onlyPriority: true})
-                                localStorage.setItem(parentTd.id+parent.id, JSON.stringify(parent.outerHTML));
+                                redactTaskBody({taskId: targObj.id, taskClass: targObj.className, onlyPriority: true, parentClass: 'in_progress'});
                             sortNodes()
-                            
                         }
                     }
                 })
@@ -246,23 +257,26 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 }
             }
         }
-
 // LocaleStorage render
 function renderLocalStorage(){
-
            for (var key in localStorage) {
            let sortageKey= key.replace(/[0-9]/g, '')
            let sortageId= key.replace(/\D+/g,"");
+           let json=JSON.parse(localStorage.getItem(key));
+console.log(json)
+if(json!= null){
+          let taskForRender=bodyTask(json)
 
-if(sortageKey==='initial'){initial.insertAdjacentHTML('afterbegin',JSON.parse(localStorage.getItem(key)));
+if(sortageKey==='initial'){initial.appendChild(taskForRender);
  displayBut(document.getElementById(sortageId))}
-if(sortageKey==='in_progress'){in_progress.insertAdjacentHTML('afterbegin',JSON.parse(localStorage.getItem(key)))
+if(sortageKey==='in_progress'){in_progress.appendChild(taskForRender)
 displayBut(document.getElementById(sortageId))}
-if(sortageKey==='done'){done.insertAdjacentHTML('afterbegin',JSON.parse(localStorage.getItem(key)))
+if(sortageKey==='done'){done.appendChild(taskForRender)
 displayBut(document.getElementById(sortageId))}
-if(sortageKey==='aborted'){aborted.insertAdjacentHTML('afterbegin',JSON.parse(localStorage.getItem(key)))
+if(sortageKey==='aborted'){aborted.appendChild(taskForRender)
 displayBut(document.getElementById(sortageId))}
 sortNodes()
+}
 }
 }
 renderLocalStorage()
